@@ -1,0 +1,170 @@
+Go Language
+Sep 2013
+
+Giacomo Tartari
+PhD student, University of Tromsø
+giacomo.tartari@uit.no
+
+
+
+
+* Go lectures 1/2
+
+Introduction to the language
+Syntax
+Capabilities
+Motivation
+
+
+
+* Go lectures 2/2
+
+Practicalities
+Installation
+Environment
+Tooling
+HowTos
+
+
+
+* Go
+
+
+
+* A new language?
+
+Why? 
+and what for?
+C?
+Don't we have Java? 
+C++? 
+Python? 
+PHP? 
+Ruby? 
+Perl?!
+[add random language here]?
+
+What's wrong with the world?
+
+.link http://talks.golang.org/2012/splash.article Rob Pike's take (one of the Go instigator)
+
+
+
+* Go
+
+Practical language to solve real problems
+
+Designed by and for people who write, read, debug and maintain large software systems
+
+But it works well for small "scripts" 
+
+Is not meant to be a research language to explore new horizons
+
+
+
+* Go
+
+Clean C-like syntax
+
+Clear dependency management
+
+CSP-like Concurrency 
+
+Garbage collection
+
+No exceptions for handling errors
+
+No implicit numeric conversions
+
+No inheritance but composition
+
+No header files
+
+
+
+* Hello World
+
+From golang.org
+
+.play hello.go /START/,/STOP/
+
+
+
+* Package
+
+.code hello.go  /START/,/STOP/ HLpackage
+
+The package keyword defines a package and a namespace
+
+Multiple files can be part of a package 
+
+No restriction to what can be in a file (unlike Java)
+
+A package is compiled in a static library or in a (statically linked) executable if `main.main()` is present
+
+
+
+* Importing other packages 
+
+.code hello.go /START/,/STOP/ HLimport
+
+Import statements are path to the package binary and/or source code
+
+e.g. 
+- import "encoding/json"
+-import "net/http/cookiejar"
+-import "code.google.com/p/go.talks/pkg/present"
+
+
+
+* Function declaration and invocation
+
+.code hello.go  /START/,/STOP/ HLmain
+
+The func keyword is used to declare/define a function
+
+Functions can have more than one return value
+
+.code hello.go  /STARTF/,/STOPF/ HLmain
+
+#Idiomatic code often looks like:
+
+#`func` `fname(param)(stuff,` `error){...}`
+
+
+
+* Declaration and visibility
+
+.code visib.go /START1/,/STOP1/
+
+Uninitialized vriables are automatically initialized to their respective zero value
+
+
+
+* Declaration and visibility 
+
+.code visib.go /STARTF/,/STOPF/
+
+
+
+* Types, methods and receivers
+
+.code visib.go /START2/,/STOP2/
+
+
+
+* Interfaces and Structural Typing
+
+Structural typing is like duck typing but better
+
+The compiler tells you if it is a _duck_
+
+.code visib.go  /START3/,/STOP3/
+
+And to be an error and _implement_ the interface all you have to do is implement its method set  
+
+.code visib.go  /START4/,/STOP4/
+
+
+
+
