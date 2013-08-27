@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 )
-
+//A is exported and visible form outside this package
 var A int
 var (
 	B       string = "hello"
 	x, y, z float32
+	//p is not exported and not visible outside this package
 	p       *int
 )
 
@@ -19,6 +20,7 @@ const (
 	C int = iota //0
 	D            //1
 	E            //2
+	Big = 1 << 100
 )
 
 

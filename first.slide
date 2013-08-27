@@ -11,10 +11,10 @@ giacomo.tartari@uit.no
 * Go lectures 1/2
 
 Introduction to the language
+
 Syntax
 Capabilities
-Motivation
-
+Example code
 
 
 * Go lectures 2/2
@@ -24,7 +24,7 @@ Installation
 Environment
 Tooling
 HowTos
-
+Demo?
 
 
 * Go
@@ -54,11 +54,11 @@ What's wrong with the world?
 
 Practical language to solve real problems
 
-Designed by and for people who write, read, debug and maintain large software systems
-
-But it works well for small "scripts" 
+Designed by and for people who write, read, debug and maintain large software systems (but it works well for small "scripts") 
 
 Is not meant to be a research language to explore new horizons
+
+Nothing exactly new but a collection of good features
 
 
 
@@ -137,7 +137,11 @@ Functions can have more than one return value
 
 .code visib.go /START1/,/STOP1/
 
-Uninitialized vriables are automatically initialized to their respective zero value
+An identifier is exported and permit access to it from another package if
+	-the first character of the identifier's name is upper case
+	-the identifier is declared in the package block or it is a field name or method name.
+
+Uninitialized vriables are zeroed
 
 
 
@@ -164,6 +168,80 @@ The compiler tells you if it is a _duck_
 And to be an error and _implement_ the interface all you have to do is implement its method set  
 
 .code visib.go  /START4/,/STOP4/
+
+
+
+* Packages, import and visibility
+
+.code mypackage/mypackage.go  /STARTIMPORT/,/STOPIMPORT/
+
+- The first character of the identifier's name is upper case
+- The identifier is declared in the package block or it is a field name or method name.
+
+Remember `fmt.Println(...)` in hello world?
+
+
+
+* Basic types
+
+.code mypackage/mypackage.go  /STARTBASIC/,/STOPBASIC/
+
+Also array, slice, maps and channels
+
+
+
+* Varibles and Constants
+
+.code mypackage/mypackage.go  /STARTVAR/,/STOPVAR/
+
+As imports variables and constants can be declared in blocks
+
+Together with the iota constant generator it permits light-weight declaration of sequential values
+
+
+* Enums? Almost
+
+.code mypackage/mypackage.go  /STARTIOTA/,/STOPIOTA/
+
+The blank identifier ( _ ) may be used in a declaration but the declaration does not introduce a new binding
+
+
+* Functions
+
+.code mypackage/mypackage.go  /STARTFUN/,/STOPFUN/
+
+Braces are mandatory for `if` `else` blocks
+
+Variables inside functions can be declared with `:=`
+The type of the expression is inferred by the compiler
+
+
+* Types and interfaces
+#struct, interfaces named types
+# Intermezzo: Allocations
+# New vs make
+
+
+
+* Composition and embedding
+
+
+
+* Flow Control: if, for and switch
+#intermezzo reflection
+#type switch 
+
+
+
+* Builtins: array, slice, maps and channels
+
+
+
+* Select
+
+
+
+
 
 
 
