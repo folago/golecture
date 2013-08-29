@@ -87,8 +87,23 @@ func privateFun(p, q int) int { // HL
 
 // STOPFUNC OMIT
 
-// START2 OMIT
-type Q struct { //exported type
+// STARTFUNRET OMIT
+//QuotRem calculates the quotient and reminder of the integer division.
+//It returns an error in case of division by zero.
+func QuotRem(a, b int) (quot, rem int, err error) { // HL
+	if b != 0 {
+		quot, rem = a/b, a%b // HL
+
+	} else {
+		err = errors.New("cannot divide by 0") // HL
+	}
+	return
+}
+
+// STOPFUNRET OMIT
+
+// STARTSTRUCT OMIT
+type MyBuffer struct { //exported type
 	a, b, c int //not exported fields
 	D       int //exported field
 	buf     [256]byte
@@ -98,21 +113,31 @@ func (q Q) SumABC() int {
 	return q.a + q.b + q.c
 }
 
-func (q Q) A() int {
+func (q Q) A() int { //getter
 	return q.a
 }
 
-func (q *Q) SetFlag(offset int, flag byte) (err error) {
+func (q *Q) SetFlag(offset int, flag byte) error { //setter
 	if offset > 255 || offset < 0 {
-		err = errors.New("wrong offset")
-		return
+		err := errors.New("wrong offset")
+		return err
 	} else {
-		q.buf[uint8(offset)] = flag
+		q.buf[offset] = flag
 		return nil
 	}
 }
 
-// STOP2 OMIT
+// STOPSTRUCT OMIT
+
+// STARTNAMET OMIT
+
+type myint int
+
+func (m myint) Positive() bool {
+	return m > 0
+}
+
+// STOPNAMET OMIT
 
 /*
 // START3 OMIT

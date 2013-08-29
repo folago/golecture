@@ -35,9 +35,11 @@ Demo?
 
 Why? 
 and what for?
-C?
 Don't we have Java? 
+C?
 C++? 
+Haskell?
+Scala?
 Python? 
 PHP? 
 Ruby? 
@@ -52,11 +54,13 @@ What's wrong with the world?
 
 * Go
 
-Practical language to solve real problems
+Modern and pragmatical language 
 
-Designed by and for people who write, read, debug and maintain large software systems (but it works well for small "scripts") 
+Not a research language to explore new horizons
 
-Is not meant to be a research language to explore new horizons
+Designed by and for people who build and maintain large systems
+
+Good tools
 
 Nothing exactly new but a collection of good features
 
@@ -64,27 +68,27 @@ Nothing exactly new but a collection of good features
 
 * Go
 
-Clean C-like syntax
-
-Clear dependency management
+C-like syntax
 
 CSP-like Concurrency 
 
 Garbage collection
 
-No exceptions for handling errors
+Static and strong typed
 
-No implicit numeric conversions
+No exceptions for handling errors
 
 No inheritance but composition
 
-No header files
+No generics
 
+No header files	
+
+.link http://golang.org/doc/faq
 
 
 * Hello World
 
-From golang.org
 
 .play hello.go /START/,/STOP/
 
@@ -94,13 +98,14 @@ From golang.org
 
 .code hello.go  /START/,/STOP/ HLpackage
 
-The package keyword defines a package and a namespace
+Go packages mix the properties of libraries, name spaces, and modules
+
+A package is compiled in a static library or in a (statically linked) executable if `main.main()` is present
 
 Multiple files can be part of a package 
 
 No restriction to what can be in a file (unlike Java)
 
-A package is compiled in a static library or in a (statically linked) executable if `main.main()` is present
 
 
 
@@ -111,21 +116,27 @@ A package is compiled in a static library or in a (statically linked) executable
 Import statements are path to the package binary and/or source code
 
 e.g. 
+
 - import "encoding/json"
--import "net/http/cookiejar"
--import "code.google.com/p/go.talks/pkg/present"
+- import "net/http/cookiejar"
+- import "github.com/golang/groupcache"
+- import "code.google.com/p/go.talks/pkg/present"
 
 
 
-* Function declaration and invocation
+* Function declaration
 
 .code hello.go  /START/,/STOP/ HLmain
 
 The func keyword is used to declare/define a function
 
-Functions can have more than one return value
+	func Println(a ...interface{}) (n int, err error)
 
-.code hello.go  /STARTF/,/STOPF/ HLmain
+Functions are first-class
+
+Functions can have more than one return value
+#
+#.code hello.go  /STARTF/,/STOPF/ HLmain
 
 #Idiomatic code often looks like:
 
@@ -133,52 +144,26 @@ Functions can have more than one return value
 
 
 
-* Declaration and visibility
+* Output 
 
-.code visib.go /START1/,/STOP1/
+.code hello.go  /START/,/STOP/ HLfunc
 
-An identifier is exported and permit access to it from another package if
-	-the first character of the identifier's name is upper case
-	-the identifier is declared in the package block or it is a field name or method name.
+From golang.org/pkg/fmt/
 
-Uninitialized vriables are zeroed
+#	func Fprint(w io.Writer, a ...interface{}) (n int, err error)
+#	func Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error)
+#	func Fprintln(w io.Writer, a ...interface{}) (n int, err error)
+	...
+	func Print(a ...interface{}) (n int, err error)
+	func Printf(format string, a ...interface{}) (n int, err error)
+	func Println(a ...interface{}) (n int, err error)
+	func Scan(a ...interface{}) (n int, err error)
+	func Scanf(format string, a ...interface{}) (n int, err error)
+	func Scanln(a ...interface{}) (n int, err error)
+	func Sprint(a ...interface{}) string
+	func Sscan(str string, a ...interface{}) (n int, err error)
+	...
 
-
-
-* Declaration and visibility 
-
-.code visib.go /STARTF/,/STOPF/
-
-
-
-* Types, methods and receivers
-
-.code visib.go /START2/,/STOP2/
-
-
-
-* Interfaces and Structural Typing
-
-Structural typing is like duck typing but better
-
-The compiler tells you if it is a _duck_
-
-.code visib.go  /START3/,/STOP3/
-
-And to be an error and _implement_ the interface all you have to do is implement its method set  
-
-.code visib.go  /START4/,/STOP4/
-
-
-
-* Packages, import and visibility
-
-.code mypackage/mypackage.go  /STARTIMPORT/,/STOPIMPORT/
-
-- The first character of the identifier's name is upper case
-- The identifier is declared in the package block or it is a field name or method name.
-
-Remember `fmt.Println(...)` in hello world?
 
 
 
@@ -190,13 +175,40 @@ Also array, slice, maps and channels
 
 
 
+
+* Packages, exported identifiers
+
+.code mypackage/mypackage.go  /STARTIMPORT/,/STOPIMPORT/
+
+- The first character of the identifier's name is upper case
+- The identifier is declared in the package block or it is a field name or method name.
+
+Remember `fmt.Println(...)` in hello world?
+
+
+
+
 * Varibles and Constants
 
-.code mypackage/mypackage.go  /STARTVAR/,/STOPVAR/
+	var (
+		B       string = "hello"
+		x, y, z float32
+		p       *int
+	)
+
+	const (
+		C   = iota //0
+		D          //1
+		E          //2
+	)
 
 As imports variables and constants can be declared in blocks
 
+Variables, and constants, can be initialized when declared
+
 Together with the iota constant generator it permits light-weight declaration of sequential values
+
+
 
 
 * Enums? Almost
@@ -212,37 +224,282 @@ The blank identifier ( _ ) may be used in a declaration but the declaration does
 
 Braces are mandatory for `if` `else` blocks
 
-Variables inside functions can be declared with `:=`
-The type of the expression is inferred by the compiler
+Variables inside functions can be declared and initialized with `:=`
 
-
-* Types and interfaces
-#struct, interfaces named types
-# Intermezzo: Allocations
-# New vs make
+The type of the expression is inferred by the compiler 
 
 
 
-* Composition and embedding
+* Named return values
 
+.code mypackage/mypackage.go  /STARTFUNRET/,/STOPFUNRET/
+
+Return parameters can be named and treated as variables
+
+A return statement without arguments returns the current values of the results
+
+
+* Functions
+
+.play firstfunc.go
+
+First-class functions,  higher-order functions, user-defined function types, function literals, closures
+
+
+
+
+* Structs, literals, and methods
+#.code mypackage/mypackage.go  /STARTSTRUCT/,/STOPSTRUCT/
+	type Vertex struct {
+		X, Y int
+	}
+
+	var (
+		p = Vertex{1, 2}  // has type Vertex
+		q = &Vertex{1, 2} // has type *Vertex
+		r = Vertex{X: 1}  // Y:0 is implicit
+		s = Vertex{}      // X:0 and Y:0
+	)
+	
+	
+	func (v1 Vertex)Add(v2 Vertex)Vertex{
+		return Vector{v1.X + v2.X, v1.Y + v2.Y}
+	}
+
+	vec := p.Add(q)
+
+
+* Method receivers
+
+.play receiver.go 
+
+
+
+
+* Interfaces
+
+Interfaces are a sets of methods
+
+Just behavior
+
+Often just a few methods
+
+From pkg/io
+
+	type Writer interface {
+		Write(p []byte) (n int, err error)
+	}
+
+	type Reader interface {
+		    Read(p []byte) (n int, err error)
+	}
+
+	type Closer interface {
+		Close() error
+	}
+
+
+
+* Interfaces
+
+An interface is satisfied if the type implements all the methods in the set
+
+No _implements_ keyword
+
+Interface satisfaction is statically checked at compile time
+
+Interfaces are type-safe
+
+Structural typing, is like duck typing but better
+
+The compiler tells you if it is a _duck_
+
+
+* Interfaces composition
+
+Interfaces can be composed 
+
+From pkg/io
+
+	type ReadWriteCloser interface {
+			Reader
+			Writer
+			Closer
+	}
+
+	func MyFunc(stream io.ReadWriteCloser) error{
+		...
+		stream.Read()
+		sream.Write(data)
+		stream.Close()
+		...
+	}
+
+
+
+* Struct embedding
+
+Also struct can be composed by embedding
+
+	type Vertex struct {
+		X, Y int
+	}
+	
+	func (v *Vertex) Sum(a Vertex) {
+		v.X += a.X
+		v.Y += a.Y
+	}
+
+	type VectorLocker struct{
+		synch.Mutex
+		Vertex
+	}
+
+	vl := VectorLocker{}
+	vl.Lock()
+	vl.X = 0
+	vl.Unlock()
+
+	//vl.Mutex.Unklock()
+	//vl.Vertex.X
 
 
 * Flow Control: if, for and switch
 #intermezzo reflection
 #type switch 
 
+* If 
+
+.play if.go
+
+* For
+
+.play for.go
+
+As in C or Java, you can leave the pre and post statements empty
+
+And drop the semicolons: C's while is spelled for in Go
+
+* Switch
+
+.play switch.go
+
+* Type switch
+
+	type error interface {
+			Error() string
+	}
+    
+    
+	type PathError struct{
+		Path string
+		Ctx *Context
+		Timestamp time.Time
+	}
+	
+	func (pe PathError) Error() string{
+		return fmt.Sprintf("Wrong path: %s", pe.Path)
+	}
+	
+	err := FuncPath(...)
+	ep := err.(ErrorPath)
+	ep.Ctx
+
+
+
+* Type switch
+
+What is the actual type of an interface?
+
+	err := json.Unmarshal(data, &p)
+	if err != nil {
+		switch t := err.(type) {
+		case *json.UnmarshalFieldError:
+			log.Println(t)
+		case *json.UnmarshalTypeError:
+			log.Println(t)
+		case *json.UnsupportedTypeError:
+			log.Println(t)
+		case *json.UnsupportedValueError:
+			log.Println(t)
+		case *json.SyntaxError:
+			log.Println(t)
+		case *json.InvalidUnmarshalError:
+			log.Println(t)
+		}
+		return err
+	}
 
 
 * Builtins: array, slice, maps and channels
 
+
+* Range
 
 
 * Select
 
 
 
+* Instalaltion
+
+* Environment
+
+* Tools
+
+* go tool
+
+* gofmt
+
+* godoc
+
+* buildtag?
+
+* Demo
+
+* Test
+
+* Benchmark
 
 
 
+
+
+
+#* Declaration and visibility
+#
+#.code visib.go /START1/,/STOP1/
+#
+#An identifier is exported and permit access to it from another package if
+#	-the first character of the identifier's name is upper case
+#	-the identifier is declared in the package block or it is a field name or method name.
+#
+#Uninitialized vriables are zeroed
+#
+#
+#
+#* Declaration and visibility 
+#
+#.code visib.go /STARTF/,/STOPF/
+#
+#
+#
+#* Types, methods and receivers
+#
+#.code visib.go /START2/,/STOP2/
+#
+#
+#
+#* Interfaces and Structural Typing
+#
+#Structural typing is like duck typing but better
+#
+#The compiler tells you if it is a _duck_
+#
+#.code visib.go  /START3/,/STOP3/
+#
+#And to be an error and _implement_ the interface all you have to do is implement its method set  
+#
+#.code visib.go  /START4/,/STOP4/
 
 
