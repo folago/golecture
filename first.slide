@@ -239,7 +239,7 @@ Return parameters can be named and treated as variables
 A return statement without arguments returns the current values of the results
 
 
-* Functions
+* More  functions 
 
 .play firstfunc.go
 
@@ -253,21 +253,23 @@ First-class functions,  higher-order functions, user-defined function types, fun
 	type Vertex struct {
 		X, Y int
 	}
+	
+	func (v1 Vertex)Add(v2 Vertex)Vertex{
+		return Vector{v1.X + v2.X, v1.Y + v2.Y}
+	}
+    
+    
 
 	var (
 		p = Vertex{1, 2}  // has type Vertex
 		q = &Vertex{1, 2} // has type *Vertex
 		r = Vertex{X: 1}  // Y:0 is implicit
 		s = Vertex{}      // X:0 and Y:0
+		t = Vertex{X: 3, Y: 4}
 	)
-	
-	
-	func (v1 Vertex)Add(v2 Vertex)Vertex{
-		return Vector{v1.X + v2.X, v1.Y + v2.Y}
-	}
 
-	vec := p.Add(q)
-
+	p.X = 42
+	v := p.Add(q)
 
 * Method receivers
 
@@ -300,6 +302,7 @@ From pkg/io
 
 
 
+
 * Interfaces
 
 An interface is satisfied if the type implements all the methods in the set
@@ -313,6 +316,19 @@ Interfaces are type-safe
 Structural typing, is like duck typing but better
 
 The compiler tells you if it is a _duck_
+
+
+
+
+* Interfaces
+
+Any type satisfies the empty method set
+
+	interface{}
+
+.play iempty.go 
+
+
 
 
 * Interfaces composition
@@ -336,18 +352,20 @@ From pkg/io
 	}
 
 
-
-* Struct embedding
+* Struct embedding 
 
 Also struct can be composed by embedding
 
+.play embed.go
+
+
+* Struct embedding
+
+
+	import "sync"
+
 	type Vertex struct {
 		X, Y int
-	}
-	
-	func (v *Vertex) Sum(a Vertex) {
-		v.X += a.X
-		v.Y += a.Y
 	}
 
 	type VectorLocker struct{
@@ -384,7 +402,7 @@ And drop the semicolons: C's while is spelled for in Go
 
 .play switch.go
 
-* Type switch
+* Type assertion
 
 	type error interface {
 			Error() string
@@ -401,9 +419,12 @@ And drop the semicolons: C's while is spelled for in Go
 		return fmt.Sprintf("Wrong path: %s", pe.Path)
 	}
 	
+    
 	err := FuncPath(...)
-	ep := err.(ErrorPath)
-	ep.Ctx
+	ep, ok := err.(PathError) 
+	if ok{
+		ep.Ctx
+	}
 
 
 
@@ -432,6 +453,31 @@ What is the actual type of an interface?
 
 
 * Builtins: array, slice, maps and channels
+
+
+* Array
+
+	var array [10]int
+
+	primes := [...]int{2, 3, 5, 7, 11, 13, 17}
+
+Value type not reference type
+
+Passed by value
+
+The size of an array is part of its type
+
+	[5]int != [10]int
+
+
+* Slice
+
+var slice []int
+
+
+food := []string{"egg", "apple", "bread", "beer"}
+
+
 
 
 * Range

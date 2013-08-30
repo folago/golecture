@@ -13,8 +13,7 @@ func main() {
 	case 7,8,9:
         fmt.Println("[7,9]")
     default:
-        // freebsd, openbsd,
-        // plan9, windows...
+        // something else
         fmt.Println("some number")
     }
 }
