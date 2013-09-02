@@ -3,19 +3,19 @@ package main
 import "fmt"
 
 type Person struct {
-    Name string
-    Age int
+	Name string
+	Age  int
 }
 
-type User struct{
-    Person
-    Id int
+type User struct {
+	Person
+	Id int
 }
 
 func main() {
-    a := User{}
-    a.Name = "Adam"
-    a.Age = 42
-    a.Id = 1
-    fmt.Println(a)
+	u := User{}
+	u.Name = "Adam" // u.Person.Name = "Adam"
+	u.Age = 42      //u.Person.Age = 42
+	u.Id = 1
+	fmt.Println(u)
 }

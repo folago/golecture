@@ -246,6 +246,31 @@ A return statement without arguments returns the current values of the results
 First-class functions,  higher-order functions, user-defined function types, function literals, closures
 
 
+* Deferred functions
+
+A defer statement schedules a function call to be run just before the function executing the defer returns
+
+The canonical examples are unlocking a mutex or closing a file
+
+	package main
+
+	import (
+		"fmt"
+		"os"
+	)
+
+	func main() {
+		fname := "/tmp/file.tmp"
+		f, err := os.Open(fname)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer f.Close()
+
+		// do stuff with file
+	}
+
 
 
 * Structs, literals, and methods
@@ -361,6 +386,13 @@ Also struct can be composed by embedding
 
 * Struct embedding
 
+And the interface they are satisfying as well
+    
+	type Locker interface {
+			Lock()
+			Unlock()
+	}
+    
 
 	import "sync"
 
@@ -368,18 +400,15 @@ Also struct can be composed by embedding
 		X, Y int
 	}
 
-	type VectorLocker struct{
-		synch.Mutex
+	type VertexLocker struct{
+		sync.Mutex
 		Vertex
 	}
 
-	vl := VectorLocker{}
+	vl := VertexLocker{}
 	vl.Lock()
-	vl.X = 0
+	vl.X = 99
 	vl.Unlock()
-
-	//vl.Mutex.Unklock()
-	//vl.Vertex.X
 
 
 * Flow Control: if, for and switch
@@ -401,6 +430,13 @@ And drop the semicolons: C's while is spelled for in Go
 * Switch
 
 .play switch.go
+
+
+* Switch 
+
+Not just numbers
+
+.play switchstring.go
 
 * Type assertion
 
@@ -452,35 +488,82 @@ What is the actual type of an interface?
 	}
 
 
-* Builtins: array, slice, maps and channels
+* Array, slice and maps 
+#and channels
+
 
 
 * Array
 
-	var array [10]int
 
-	primes := [...]int{2, 3, 5, 7, 11, 13, 17}
+.play array.go
+
+
+
+
+* Array 
 
 Value type not reference type
 
-Passed by value
-
 The size of an array is part of its type
 
-	[5]int != [10]int
+.play array2.go
+
 
 
 * Slice
 
-var slice []int
+.play slice.go
 
 
-food := []string{"egg", "apple", "bread", "beer"}
 
 
+* Slice internals
+
+.image godata3.png
+
+.play slice2.go
+
+
+
+
+
+* Maps
+
+.play maps.go /START/,/STOP/
+
+Keys can be integers, floats, complex, strings, pointers, interfaces, structs, arrays
 
 
 * Range
+
+.play range.go
+
+* Concurrency: goroutines and channels
+
+
+* Goroutine
+
+.play goroutine.go
+
+Goroutines live in the same address space
+We can use the sync package, but we have something better...
+
+
+
+* Channels
+	
+	ch := make(chan int)
+	ch := make(chan int, 10) // buffered channel
+	ch <- v                  // Send v to channel ch
+	v := <-ch                // Receive from ch, and assign value to v
+
+_Don't_communicate_by_sharing_memory;_share_memory_by_communicating._
+
+	go producer(ch chan Message)
+	...
+	go consumer(ch chan Message)
+
 
 
 * Select
@@ -508,6 +591,30 @@ food := []string{"egg", "apple", "bread", "beer"}
 * Benchmark
 
 
+* Readings
+
+
+http://golang.org/
+http://talks.golang.org/2012/splash.article
+http://golang.org/doc/effective_go.htm
+http://golang.org/ref/spec
+https://code.google.com/p/go-wiki/w/list
+https://code.google.com/p/go-wiki/wiki/GoTalks
+http://blog.golang.org/
+http://morsmachine.dk/go-scheduler
+http://swtch.com/~rsc/thread/
+http://www.cs.ucf.edu/courses/cop4020/sum2009/CSP-hoare.pdf
+http://concur.rspace.googlecode.com/hg/talk/concur.html
+http://talks.golang.org/2012/concurrency.slide
+http://talks.golang.org/2013/advconc.slide
+http://research.swtch.com/gotour
+http://research.swtch.com/godata
+https://gobyexample.com/
+http://tour.golang.org/
+https://groups.google.com/forum/#!forum/golang-nuts
+https://plus.google.com/communities/114112804251407510571/stream/f49df777-7381-4c40-b547-44605e01a866
+http://golang.org/doc/articles/race_detector.html
+http://godoc.org/
 
 
 
