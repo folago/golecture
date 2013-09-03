@@ -558,27 +558,154 @@ We can use the sync package, but we have something better...
 	ch <- v                  // Send v to channel ch
 	v := <-ch                // Receive from ch, and assign value to v
 
+Same as Unix pipes
+
+- Read block until pipe full
+- Write block until pipe have space
+
+* Channles
+
 _Don't_communicate_by_sharing_memory;_share_memory_by_communicating._
 
-	go producer(ch chan Message)
+	func producer(ch chan Message){
+		for{
+			ch <- msg.New()
+		}
+	}
 	...
-	go consumer(ch chan Message)
+	func consumer(ch chan Message){
+		for m := range ch {
+			msg.Consume(m)
+		}
+	}
+
 
 
 
 * Select
 
-
+.play select.go /START/,/STOP/
 
 * Instalaltion
 
+Official binary distributions 
+
+- FreeBSD
+- Linux
+- Mac OS X (Snow Leopard, Lion, and Mountain Lion)
+- NetBSD
+- Windows
+
+Both 32 and 64 bit
+
+
+
+
+* Installation
+
+Or from source
+
+- Needs a C compiler 
+- Needs mercurial
+- Allows you to try the delevopment brabch
+
+
+
+
+
 * Environment
 
-* Tools
+Some optionnal environment variables
 
-* go tool
+- GOROOT
+- GOOS
+- GOARCH
+- GOBIN
+	
+To override the defaults put sometinh like this in you `.bashrc` or `.profile`
 
-* gofmt
+	export GOROOT=$HOME/go
+	export GOARCH=amd64
+	export GOOS=linux
+	export PATH=$GOROOT/bin:$PATH 
+
+* Environment
+
+One environment variable that is needed  is GOPATH
+
+From the help:
+
+	The Go path is used to resolve import statements.
+	It is implemented by and documented in the go/build package.
+
+	The GOPATH environment variable lists places to look for Go code.
+	On Unix, the value is a colon-separated string.
+	On Windows, the value is a semicolon-separated string.
+	On Plan 9, the value is a list.
+
+	GOPATH must be set to get, build and install packages outside the
+	standard Go tree.
+
+e.g. `GOPATH=/home/user/gocode`
+
+
+* GOPATH
+
+
+More from the help:
+
+	Here's an example directory layout:
+
+	GOPATH=/home/user/gocode
+
+	/home/user/gocode/
+		src/
+			foo/
+				bar/               (go code in package bar)
+					x.go
+				quux/              (go code in package main)
+					y.go
+		bin/
+			quux                   (installed command)
+		pkg/
+			linux_amd64/
+				foo/
+					bar.a          (installed package object)
+
+
+Also GOPATH/bin shoul go in yor PATH
+
+
+* go tool(s)
+
+	$go help
+	Go is a tool for managing Go source code.
+
+	Usage:
+
+		go command [arguments]
+
+	The commands are:
+
+		build       compile packages and dependencies
+		clean       remove object files
+		env         print Go environment information
+		fix         run go tool fix on packages
+		fmt         run gofmt on package sources
+		get         download and install packages and dependencies
+		install     compile and install packages and dependencies
+		list        list packages
+		run         compile and run Go program
+		test        test packages
+		tool        run specified go tool
+		version     print Go version
+		vet         run go tool vet on packages
+		...
+
+
+* 
+
+	
 
 * godoc
 
