@@ -312,8 +312,10 @@ First-class functions,  higher-order functions and user-defined function types
 
 * More functions
 
+.play closures.go
 
 Function literals are closures
+
 
 * Deferred functions
 
@@ -332,8 +334,7 @@ The canonical examples are unlocking a mutex or closing a file
 		fname := "/tmp/file.tmp"
 		f, err := os.Open(fname)
 		if err != nil {
-			fmt.Println(err)
-			return
+			/*handle error*/
 		}
 		defer f.Close()
 
@@ -341,18 +342,40 @@ The canonical examples are unlocking a mutex or closing a file
 	}
 
 
+* Types, allocations and composition
 
-* Structs, literals, and methods
-#.code mypackage/mypackage.go  /STARTSTRUCT/,/STOPSTRUCT/
-	type Vertex struct {
-		X, Y int
+- Type definition
+- Method definition
+- Allocation
+- Interfaces
+- Composition and embedding
+
+
+* Type definition
+
+	type myint int
+
+	type User struct{
+		Name string
+		Age int
 	}
-	
-	func (v1 Vertex)Add(v2 Vertex)Vertex{
-		return Vector{v1.X + v2.X, v1.Y + v2.Y}
+
+	type Writer interface{
+		Write()
 	}
-    
-    
+
+
+Go is strong typed so `MyInt` is not an `int`
+
+Types can be onverted  with this syntax `int(MyInt)`
+
+Any type can have methods (even functions)
+
+
+
+* Allocation
+
+Struct literals
 
 	var (
 		p = Vertex{1, 2}  // has type Vertex
@@ -362,14 +385,37 @@ The canonical examples are unlocking a mutex or closing a file
 		t = Vertex{X: 3, Y: 4}
 	)
 
-	p.X = 42
-	v := p.Add(q)
+Built in function `new()` returns a pointer to a newly allocated and zeroed memory
+
+	v := new(Vertex) // has type *Vertex
+
+Built in function `make()` used to allocate more complex built in types: channels, maps and slices
+
+	m := make(map[string]int)
+
+* Methods
+
+	type Vertex struct {
+		X, Y int
+	}
+	
+	func (v1 Vertex)Add(v2 Vertex)Vertex{
+		return Vector{v1.X + v2.X, v1.Y + v2.Y}
+	}
+
+Method invocation is with the dot notation
+
+	var (
+		m = Vertex{1, 2}
+		n = Vertex{3, 4}
+		)
+	...
+	m.Add(n)
+    
 
 * Method receivers
 
 .play receiver.go 
-
-
 
 
 * Interfaces

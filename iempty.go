@@ -7,5 +7,7 @@ func main() {
 	x := 127
 	i = x
 	fmt.Println("i:", i)
-	fmt.Println("x:", x)
+	v := struct{ π, e float32 }{3.14159, 2.71828}
+	i = v
+	fmt.Println("i:", i)
 }
