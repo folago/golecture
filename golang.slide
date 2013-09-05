@@ -112,75 +112,75 @@ No header files
 
 
 
-* Package
-
-.code hello.go  /START/,/STOP/ HLpackage
-
-Go packages mix the properties of libraries, name spaces, and modules
-
-A package is compiled in a static library or in a (statically linked) executable if `main.main()` is present
-
-Multiple files can be part of a package 
-
-No restriction to what can be in a file (unlike Java)
-
-
-
-
-* Importing other packages 
-
-.code hello.go /START/,/STOP/ HLimport
-
-Import statements are path to the package binary and/or source code
-
-e.g. 
-
-- import "encoding/json"
-- import "net/http/cookiejar"
-- import "github.com/golang/groupcache"
-- import "code.google.com/p/go.talks/pkg/present"
-
-
-
-* Function declaration
-
-.code hello.go  /START/,/STOP/ HLmain
-
-The func keyword is used to declare/define a function
-
-	func Println(a ...interface{}) (n int, err error)
-
-Functions are first-class
-
-Functions can have more than one return value
+#* Package
 #
-#.code hello.go  /STARTF/,/STOPF/ HLmain
-
-#Idiomatic code often looks like:
-
-#`func` `fname(param)(stuff,` `error){...}`
-
-
-
-* Output 
-
-.code hello.go  /START/,/STOP/ HLfunc
-
-From golang.org/pkg/fmt/
-
+#.code hello.go  /START/,/STOP/ HLpackage
+#
+#Go packages mix the properties of libraries, name spaces, and modules
+#
+#A package is compiled in a static library or in a (statically linked) executable if `main.main()` is present
+#
+#Multiple files can be part of a package 
+#
+#No restriction to what can be in a file (unlike Java)
+#
+#
+#
+#
+#* Importing other packages 
+#
+#.code hello.go /START/,/STOP/ HLimport
+#
+#Import statements are path to the package binary and/or source code
+#
+#e.g. 
+#
+#- import "encoding/json"
+#- import "net/http/cookiejar"
+#- import "github.com/golang/groupcache"
+#- import "code.google.com/p/go.talks/pkg/present"
+#
+#
+#
+#* Function declaration
+#
+#.code hello.go  /START/,/STOP/ HLmain
+#
+#The func keyword is used to declare/define a function
+#
+#	func Println(a ...interface{}) (n int, err error)
+#
+#Functions are first-class
+#
+#Functions can have more than one return value
+##
+##.code hello.go  /STARTF/,/STOPF/ HLmain
+#
+##Idiomatic code often looks like:
+#
+##`func` `fname(param)(stuff,` `error){...}`
+#
+#
+#
+#* Output 
+#
+#.code hello.go  /START/,/STOP/ HLfunc
+#
+#From golang.org/pkg/fmt/
+#
 #	func Fprint(w io.Writer, a ...interface{}) (n int, err error)
 #	func Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error)
 #	func Fprintln(w io.Writer, a ...interface{}) (n int, err error)
-	...
-	func Print(a ...interface{}) (n int, err error)
-	func Printf(format string, a ...interface{}) (n int, err error)
-	func Println(a ...interface{}) (n int, err error)
-	func Scan(a ...interface{}) (n int, err error)
-	func Scanf(format string, a ...interface{}) (n int, err error)
-	func Scanln(a ...interface{}) (n int, err error)
-	func Sprint(a ...interface{}) string
-	func Sscan(str string, a ...interface{}) (n int, err error)
-	...
+#	...
+#	func Print(a ...interface{}) (n int, err error)
+#	func Printf(format string, a ...interface{}) (n int, err error)
+#	func Println(a ...interface{}) (n int, err error)
+#	func Scan(a ...interface{}) (n int, err error)
+#	func Scanf(format string, a ...interface{}) (n int, err error)
+#	func Scanln(a ...interface{}) (n int, err error)
+#	func Sprint(a ...interface{}) string
+#	func Sscan(str string, a ...interface{}) (n int, err error)
+#	...
 
 
 
@@ -210,6 +210,43 @@ But we'll see them later
 
 
 
+* Some operators
+
+	+    sum                    integers, floats, complex values, strings
+	-    difference             integers, floats, complex values
+	*    product                integers, floats, complex values
+	/    quotient               integers, floats, complex values
+	%    remainder              integers
+
+	&&    conditional AND    p && q  is  "if p then q else false"
+	||    conditional OR     p || q  is  "if p then true else q"
+	!     NOT                !p      is  "not p"
+
+	==    equal
+	!=    not equal
+	<     less
+	<=    less or equal
+	>     greater
+	>=    greater or equal
+
+	&x    address operator
+	*p	  pointer indirection
+
+No pointer arithmetics 
+
+
+* Packages
+
+- Go packages mix the properties of libraries, name spaces, and modules
+
+- A package is compiled in a static library or in a (statically linked) executable if `main.main()` is present
+
+- Multiple files can be part of a package 
+
+- No restriction to what can be in a file
+
+- Name visibility outside packages is a property of the name
+
 
 * Packages, exported identifiers
 
@@ -222,9 +259,7 @@ But we'll see them later
 	)
 
 	var A int //exported
-
 	func MyFunc(){...} //exported
-
 	var b float32 //not exported
 
 A name is visible outside its package iff
@@ -233,6 +268,7 @@ A name is visible outside its package iff
 - The identifier is declared in the package block or it is a field name or method name.
 
 Remember `fmt.Println(...)` in hello world?
+
 
 
 
@@ -1048,28 +1084,33 @@ See the docs off line
 * Readings
 
 
-http://golang.org/
-http://talks.golang.org/2012/splash.article
-http://golang.org/doc/effective_go.htm
-http://golang.org/ref/spec
-https://code.google.com/p/go-wiki/w/list
-https://code.google.com/p/go-wiki/wiki/GoTalks
-http://blog.golang.org/
-http://morsmachine.dk/go-scheduler
-http://swtch.com/~rsc/thread/
-http://www.cs.ucf.edu/courses/cop4020/sum2009/CSP-hoare.pdf
-http://concur.rspace.googlecode.com/hg/talk/concur.html
-http://talks.golang.org/2012/concurrency.slide
-http://talks.golang.org/2013/advconc.slide
-http://research.swtch.com/gotour
-http://research.swtch.com/godata
-https://gobyexample.com/
-http://learnxinyminutes.com/docs/go/
-http://tour.golang.org/
-https://groups.google.com/forum/#!forum/golang-nuts
-https://plus.google.com/communities/114112804251407510571/stream/f49df777-7381-4c40-b547-44605e01a866
-http://golang.org/doc/articles/race_detector.html
-http://godoc.org/
+.link http://golang.org/
+
+.link http://tour.golang.org/
+.link https://gobyexample.com/
+.link http://learnxinyminutes.com/docs/go/
+
+.link http://talks.golang.org
+#http://golang.org/doc/effective_go.htm
+#http://golang.org/ref/spec
+.link https://code.google.com/p/go-wiki/w/list
+.link https://code.google.com/p/go-wiki/wiki/GoTalks
+.link http://research.swtch.com/godata
+.link http://morsmachine.dk/go-scheduler
+#http://swtch.com/~rsc/thread/
+.link http://www.cs.ucf.edu/courses/cop4020/sum2009/CSP-hoare.pdf CSP
+
+#* Readings
+
+#.link http://concur.rspace.googlecode.com/hg/talk/concur.html
+#.link http://talks.golang.org/2012/concurrency.slide
+#.link http://talks.golang.org/2013/advconc.slide
+#http://research.swtch.com/gotour
+#http://tour.golang.org/
+#https://groups.google.com/forum/#!forum/golang-nuts
+#https://plus.google.com/communities/114112804251407510571/stream/f49df777-7381-4c40-b547-44605e01a866
+#http://golang.org/doc/articles/race_detector.html
+#http://godoc.org/
 
 
 
