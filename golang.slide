@@ -8,10 +8,10 @@ giacomo.tartari@uit.no
 
 
 
-* Go lectures 1/2
+* Go lecture 1/2
 
-Introduction to the language
-
+Introduction
+Motivation
 Syntax
 Capabilities
 Example code
@@ -49,10 +49,19 @@ Perl?!
 Brainfuck!!!!
 [add random language here]?
 
-What's wrong with the world?
+* A new language
+
+What's wrong with all of the above?
 
 .link http://talks.golang.org/2012/splash.article Rob Pike's take (one of the Go instigator)
 
+Languages used at Google were not satisfactory
+
+- These languages were developed before the multi-core revolution
+- Millions of lines of code maintained by thousands of programmers
+- Build times of many minutes or hours 
+
+Go is compiled, concurrent, garbage-collected, statically typed
 
 
 * Go
@@ -65,7 +74,7 @@ A language to get the job done
 
 Designed by and for people who build and maintain large systems
 
-Easy to read
+Easy to read, clean syntax
 
 Good tools
 
@@ -90,9 +99,10 @@ No inheritance but composition
 
 No generics
 
-No header files	
+No header files
 
 .link http://golang.org/doc/faq
+
 
 
 * Hello World
@@ -630,7 +640,7 @@ The size of an array is part of its type
 
 .play slice.go
 
-
+Just a *slice* of an array
 
 
 * Slice internals
@@ -654,6 +664,8 @@ Keys can be integers, floats, complex, strings, pointers, interfaces, structs, a
 
 .play range.go
 
+
+
 * Concurrency: goroutines and channels
 
 
@@ -662,44 +674,149 @@ Keys can be integers, floats, complex, strings, pointers, interfaces, structs, a
 .play goroutine.go
 
 Goroutines live in the same address space
-We can use the sync package, but we have something better...
+
+Think of them as avery lightweight threads
+#We can use the sync package, but we have something better...
 
 
 
 * Channels
 	
-	ch := make(chan int)
+	ch := make(chan int)	 // unbuffered channel
 	ch := make(chan int, 10) // buffered channel
+
+Communication primitives
+
 	ch <- v                  // Send v to channel ch
 	v := <-ch                // Receive from ch, and assign value to v
 
+
+Unbuffered channels combine communication with synchronization
+
+Buffered channel are more like synchronized and type safe FIFO queues
+
 Same as Unix pipes
 
-- Read block until pipe full
-- Write block until pipe have space
+- Read blocks while pipe is empty
+- Write blocks while pipe is full
 
-* Channles
+
+
+* More channels
+
+Channels can be closed to signal the receivers the termination of the data flow
+
+	ch := make(chan int)
+	close(ch)
+
+To check if a channel is close use the multi-valued assignment form of the receive operator
+
+	x, ok := <-ch
+	if !ok{
+		fmt.Println("Channel closed!")
+	}
+
+Receiving from a closed channel always succeeds, immediately returning the element type's zero value
+
+
+
+* More channels
 
 _Don't_communicate_by_sharing_memory;_share_memory_by_communicating._
 
-	func producer(ch chan Message){
-		for{
-			ch <- msg.New()
-		}
-	}
+	ch := make(chan *Message)
 	...
-	func consumer(ch chan Message){
+	//producer
+	go func(){
+		for{
+			ch <- &Message{...}
+		}
+	}()
+	...
+	//consumer
+	go func(){
 		for m := range ch {
 			msg.Consume(m)
 		}
+	}()
+
+The communication is the way these goroutines share memory
+
+* Select
+
+Select is similar to switch but each case is a communication statement
+	
+	in := make(chan int)
+	out := make(chan int)
+
+	select{
+	case i := <- in:
+		fmt.Println("received i")
+	case out <- x:
+		fmt.Println("sent x")
+	default:
+		fmt.Println("no communication")
 	}
 
+If `default` case is not present `select` blocks until a cahannel is ready to communicate
 
+`select{}` blocks forever
 
 
 * Select
 
 .play select.go /START/,/STOP/
+
+* Tricks
+
+* Avoid (some) garbage
+
+Buffered channel can hold resources to be reused
+
+	var buffers = make(chan *Buffer, 100)
+
+	go func(){
+		var buff *Buffer
+		select{
+		case buff = <- buffers:
+			//got one 
+		default:
+			buff = new(Buffer)
+		}
+	}
+	...
+	go func(){
+		select{
+		case buffers <- buff:
+			//recycle 
+		default:
+			//garbage
+		}
+	}
+
+* Broadcast a signal
+
+Goroutines are cheap, can have 100000 running on normal hardware
+
+Maybe the goroutines need to cleanup before the application shuts down
+
+Keeping track of how many are alive can be difficult
+
+But receiving from a closed channel always succeeds...
+	
+	var quit = make(chan *struct{})
+
+	select{
+	case buff := <-ch:
+		//do stuff
+	case <- quit:
+		//shutdown, close files connections etc... 
+		//cleanup
+		//...
+	}
+
+
+
 
 * Instalaltion
 
@@ -791,8 +908,23 @@ More from the help:
 Also GOPATH/bin should go in your PATH
 
 
-* Platform/architecture specific files
-nd build tags!!
+* Build constraints
+
+A build constraint is a line comment beginning with _+build_ that lists the conditions under which a file should be included in the package
+
+	// +build linux darwin
+	// +build 386
+	...
+	// +build ignore
+
+Or if the file name ends in
+
+	*_GOOS
+	*_GOARCH
+	*_GOOS_GOARCH
+
+E.g. `source_windows_amd64.go`
+
 
 * go tool(s)
 
@@ -825,13 +957,11 @@ nd build tags!!
 go get 
 
 	$go get github.com/golang/glog
-	import "github.com/golang/glog"
-	glog.Fatalf("Initialization failed: %s", err)
 
 go build
 
 	$cd $GOPATH/src/myproject
-	$go build && $go install
+	$go build 
 
 go run
 
@@ -839,7 +969,7 @@ go run
 	$vim main.go
 	$go run main.go
 
-go fmt (aka end of style war!!)
+go fmt (aka end of coding style war!!)
 
 	$go fmt .
 
@@ -898,28 +1028,19 @@ $ls -l $GOROOT/misc
 
 How to write a Go package (library) step by step
 
-The package is called msg
+Create a directory 
 
-It will process concurrently _n_ messages form a producer to a consumer
+Write the code (and the documentation and the tests)
 
-The messages need a header and a body
+Compile it
 
-The header will contain the sender, the recipient, and a flag
+Run the tests
 
-If the flag is _OK_ forward message to the recipient
+See the docs off line
 
-If flag is _KO_ discard message
-
-If flag is _Check_ discard the message if the body contains "spam"
-
-Write tests and documentation
-
-
-* buildtag?
-
-* Demo
 
 * Test
+
 
 * Benchmark
 
