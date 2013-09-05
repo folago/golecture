@@ -38,12 +38,15 @@ and what for?
 Don't we have Java? 
 C?
 C++? 
+C#?
+D?
 Haskell?
 Scala?
 Python? 
 PHP? 
 Ruby? 
 Perl?!
+Brainfuck!!!!
 [add random language here]?
 
 What's wrong with the world?
@@ -54,25 +57,30 @@ What's wrong with the world?
 
 * Go
 
-Modern and pragmatical language 
+Modern and pragmatical language
 
 Not a research language to explore new horizons
 
+A language to get the job done
+
 Designed by and for people who build and maintain large systems
+
+Easy to read
 
 Good tools
 
 Nothing exactly new but a collection of good features
 
 
-
 * Go
 
 C-like syntax
 
+Compiled to machine code
+
 CSP-like Concurrency 
 
-Garbage collection
+Garbage collected
 
 Static and strong typed
 
@@ -169,16 +177,47 @@ From golang.org/pkg/fmt/
 
 * Basic types
 
-.code mypackage/mypackage.go  /STARTBASIC/,/STOPBASIC/
+	bool
+
+	string
+
+	int  int8  int16  int32  int64
+	uint uint8 uint16 uint32 uint64 uintptr
+
+	byte // alias for uint8
+
+	rune // alias for int32
+		 // represents a Unicode code point
+
+	float32 float64
+
+	complex64 complex128
+
 
 Also array, slice, maps and channels
+But we'll see them later
+
 
 
 
 
 * Packages, exported identifiers
 
-.code mypackage/mypackage.go  /STARTIMPORT/,/STOPIMPORT/
+	package mypackage
+
+	import (
+		"errors"
+		"fmt"
+		"github.com/user/package"
+	)
+
+	var A int //exported
+
+	func MyFunc(){...} //exported
+
+	var b float32 //not exported
+
+A name is visible outside its package iff
 
 - The first character of the identifier's name is upper case
 - The identifier is declared in the package block or it is a field name or method name.
@@ -189,7 +228,7 @@ Remember `fmt.Println(...)` in hello world?
 
 
 * Varibles and Constants
-
+	
 	var (
 		B       string = "hello"
 		x, y, z float32
@@ -211,28 +250,53 @@ Together with the iota constant generator it permits light-weight declaration of
 
 
 
-* Enums? Almost
+* More varibles
 
-.code mypackage/mypackage.go  /STARTIOTA/,/STOPIOTA/
+Unused variables (and imports) are an error in Go
 
 The blank identifier ( _ ) may be used in a declaration but the declaration does not introduce a new binding
+
+Or in an assignment but the value is discarded
+
+	_, _, _ = x, y, x
+
+	const (
+		_   = iota //0
+		A          //1
+		B          //2
+	)
+
+Inside functions variable can be defined with `:=`
+
+	x := SomeFunc()
+	y := x++
+	x, y, z := 0, 1, 2
+
+The compiler infers the type
+
+
+
+
+#* Enums? Almost
+#
+#.code mypackage/mypackage.go  /STARTIOTA/,/STOPIOTA/
+#
+#The blank identifier ( _ ) may be used in a declaration but the declaration does not introduce a new binding
 
 
 * Functions
 
-.code mypackage/mypackage.go  /STARTFUN/,/STOPFUN/
-
-Braces are mandatory for `if` `else` blocks
-
-Variables inside functions can be declared and initialized with `:=`
-
-The type of the expression is inferred by the compiler 
+- First class functions  
+- Higher order functions
+- User defined function types 
+- Function literals 
+- Closures
 
 
 
 * Named return values
 
-.code mypackage/mypackage.go  /STARTFUNRET/,/STOPFUNRET/
+.play funcdiv.go  /START/,/STOP/
 
 Return parameters can be named and treated as variables
 
@@ -243,8 +307,13 @@ A return statement without arguments returns the current values of the results
 
 .play firstfunc.go
 
-First-class functions,  higher-order functions, user-defined function types, function literals, closures
+First-class functions,  higher-order functions and user-defined function types
 
+
+* More functions
+
+
+Function literals are closures
 
 * Deferred functions
 
@@ -673,8 +742,11 @@ More from the help:
 					bar.a          (installed package object)
 
 
-Also GOPATH/bin shoul go in yor PATH
+Also GOPATH/bin should go in your PATH
 
+
+* Platform/architecture specific files
+nd build tags!!
 
 * go tool(s)
 
@@ -702,12 +774,100 @@ Also GOPATH/bin shoul go in yor PATH
 		vet         run go tool vet on packages
 		...
 
+* go tool(s)
 
-* 
+go get 
 
-	
+	$go get github.com/golang/glog
+	import "github.com/golang/glog"
+	glog.Fatalf("Initialization failed: %s", err)
 
-* godoc
+go build
+
+	$cd $GOPATH/src/myproject
+	$go build && $go install
+
+go run
+
+	$cd $GOPATH/src/myproject
+	$vim main.go
+	$go run main.go
+
+go fmt (aka end of style war!!)
+
+	$go fmt .
+
+* godoc 
+
+Offline docs
+
+	$godoc
+	usage: godoc package [name ...]
+	godoc -http=:6060
+	...
+
+Online docs for the standard library
+
+.link http://golang.org/pkg
+
+Online docs for third party libraries
+
+.link http://godoc.org/
+.link http://gowalker.org/
+
+Online presentation
+
+.link http://talks.godoc.org/
+
+
+* Integration
+
+$ls -l $GOROOT/misc
+
+	IntelliJIDEA
+	arm
+	bash
+	bbedit
+	benchcmp
+	cgo
+	chrome
+	dashboard
+	dist
+	emacs
+	fraise
+	git
+	goplay
+	kate
+	linkcheck
+	notepadplus
+	pprof
+	swig
+	vim
+	xcode
+	zsh
+
+
+
+* Let's code
+
+How to write a Go package (library) step by step
+
+The package is called msg
+
+It will process concurrently _n_ messages form a producer to a consumer
+
+The messages need a header and a body
+
+The header will contain the sender, the recipient, and a flag
+
+If the flag is _OK_ forward message to the recipient
+
+If flag is _KO_ discard message
+
+If flag is _Check_ discard the message if the body contains "spam"
+
+Write tests and documentation
+
 
 * buildtag?
 
@@ -737,6 +897,7 @@ http://talks.golang.org/2013/advconc.slide
 http://research.swtch.com/gotour
 http://research.swtch.com/godata
 https://gobyexample.com/
+http://learnxinyminutes.com/docs/go/
 http://tour.golang.org/
 https://groups.google.com/forum/#!forum/golang-nuts
 https://plus.google.com/communities/114112804251407510571/stream/f49df777-7381-4c40-b547-44605e01a866
@@ -744,42 +905,5 @@ http://golang.org/doc/articles/race_detector.html
 http://godoc.org/
 
 
-
-
-#* Declaration and visibility
-#
-#.code visib.go /START1/,/STOP1/
-#
-#An identifier is exported and permit access to it from another package if
-#	-the first character of the identifier's name is upper case
-#	-the identifier is declared in the package block or it is a field name or method name.
-#
-#Uninitialized vriables are zeroed
-#
-#
-#
-#* Declaration and visibility 
-#
-#.code visib.go /STARTF/,/STOPF/
-#
-#
-#
-#* Types, methods and receivers
-#
-#.code visib.go /START2/,/STOP2/
-#
-#
-#
-#* Interfaces and Structural Typing
-#
-#Structural typing is like duck typing but better
-#
-#The compiler tells you if it is a _duck_
-#
-#.code visib.go  /START3/,/STOP3/
-#
-#And to be an error and _implement_ the interface all you have to do is implement its method set  
-#
-#.code visib.go  /START4/,/STOP4/
 
 
