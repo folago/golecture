@@ -73,23 +73,6 @@ As of 1/11/2013 feature freeze for Go 1.2
 
 
 
-* Go benchmarks (!)
-
-.image govsc.png 480 768
-
-
-
-* Go benchmarks (!)
-
-.image govsjava.png  480 768
-
-
-
-* Go benchmarks (!)
-
-.image govspy.png 480 768
-
-
 * Go
 
 Modern and pragmatical language
@@ -129,6 +112,30 @@ No header files
 
 .link http://golang.org/doc/faq
 
+
+* Go benchmarks (!)
+
+.image govsc.png 480 768
+
+
+
+* Go benchmarks (!)
+
+.image govsjava.png  480 768
+
+
+
+* Go benchmarks (!)
+
+.image govspy.png 480 768
+
+
+
+* Go benchmarks (!)
+
+.image govsruby.png 480 768
+
+.link http://benchmarksgame.alioth.debian.org/ Benchmarks from here
 
 
 * Hello World
@@ -425,11 +432,10 @@ The canonical examples are unlocking a mutex or closing a file
 
 * Type definition
 
-	type myint int
+	type MyInt int
 
-	type User struct{
-		Name string
-		Age int
+	type Vertex struct{
+		X, Y int
 	}
 
 	type Writer interface{
@@ -472,7 +478,7 @@ Built in function `make()` used to allocate more complex built in types: channel
 	}
 	
 	func (v1 Vertex)Add(v2 Vertex)Vertex{
-		return Vector{v1.X + v2.X, v1.Y + v2.Y}
+		return Vertex{v1.X + v2.X, v1.Y + v2.Y}
 	}
 
 Method invocation is with the dot notation
@@ -564,6 +570,32 @@ From pkg/io
 	}
 
 
+* Type assertion
+
+	type error interface {
+			Error() string
+	}
+    
+    
+	type PathError struct{
+		Path string
+		Ctx *Context
+		Timestamp time.Time
+	}
+	
+	func (pe PathError) Error() string{
+		return fmt.Sprintf("Wrong path: %s", pe.Path)
+	}
+	
+    
+	err := FuncPath(...)
+	ep, ok := err.(PathError) 
+	if ok{
+		ep.Ctx
+	}
+
+
+
 * Struct embedding 
 
 Also struct can be composed by embedding
@@ -614,41 +646,16 @@ As in C or Java, you can leave the pre and post statements empty
 
 And drop the semicolons: C's while is spelled for in Go
 
-* Switch
-
-.play switch.go
-
+#* Switch
+#
+#.play switch.go
+#
 
 * Switch 
 
 Not just numbers
 
 .play switchstring.go
-
-* Type assertion
-
-	type error interface {
-			Error() string
-	}
-    
-    
-	type PathError struct{
-		Path string
-		Ctx *Context
-		Timestamp time.Time
-	}
-	
-	func (pe PathError) Error() string{
-		return fmt.Sprintf("Wrong path: %s", pe.Path)
-	}
-	
-    
-	err := FuncPath(...)
-	ep, ok := err.(PathError) 
-	if ok{
-		ep.Ctx
-	}
-
 
 
 * Type switch
@@ -713,6 +720,49 @@ Just a *slice* of an array
 
 
 
+* Slice built in functions
+
+Append to a slice
+
+	func append(slice []Type, elems ...Type) []Type
+
+Slice capacity
+
+	func cap(v Type) int
+
+Slice length 
+
+	func len(v Type) int
+
+Copy a slice
+
+	func copy(dst, src []Type) int
+
+* Slice tricks
+
+AppendVector
+
+	a = append(a, b...)
+
+Copy
+
+	b = make([]T, len(a))
+	copy(b, a)
+
+
+Cut
+
+	a = append(a[:i], a[j:]...)
+
+Delete
+
+	a = append(a[:i], a[i+1:]...)
+	// or
+	a = a[:i+copy(a[i:], a[i+1:])]
+	//without preserving order
+	a[i], a = a[len(a)-1], a[:len(a)-1]
+
+etc...
 
 
 * Maps
@@ -729,6 +779,24 @@ Keys can be integers, floats, complex, strings, pointers, interfaces, structs, a
 
 
 * Concurrency: goroutines and channels
+
+* Concurrency vs Parallelism
+
+.link http://concur.rspace.googlecode.com/hg/talk/concur.html#title-slide
+
+- Concurrency != parallelism
+
+- Concurrency is the composition of independently executing processes
+
+- Concurrency enables parallelism
+
+- Concurrency is about structure
+
+- Parallelism is about execution
+
+- A concurrent program can be executed correctly on one CPU
+
+
 
 
 * Goroutine
@@ -878,9 +946,28 @@ But receiving from a closed channel always succeeds...
 	}
 
 
+* Generator
 
 
-* Instalaltion
+	func idGenerator() chan int {
+		ids := make(chan int)
+		go func() {
+			id := 0
+			for {
+				ch <- id
+				id++
+			}
+		}()
+		return ids
+	}
+	...
+	ids := idGenerator()
+	id1 := <-ids
+	id2 := <-ids
+
+
+
+* Installation
 
 Official binary distributions 
 
@@ -901,7 +988,7 @@ Or from source
 
 - Needs a C compiler 
 - Needs mercurial
-- Allows you to try the delevopment brabch
+- Allows you to try the development branch
 
 
 
@@ -909,14 +996,14 @@ Or from source
 
 * Environment
 
-Some optionnal environment variables
+Some optional environment variables
 
 - GOROOT
 - GOOS
 - GOARCH
 - GOBIN
 	
-To override the defaults put sometinh like this in you `.bashrc` or `.profile`
+To override the defaults put something like this in you `.bashrc` or `.profile`
 
 	export GOROOT=$HOME/go
 	export GOARCH=amd64
@@ -1094,6 +1181,8 @@ Create a directory
 
 Write the code (and the documentation and the tests)
 
+Have a look at the standard library
+
 Compile it
 
 Run the tests
@@ -1101,10 +1190,35 @@ Run the tests
 See the docs off line
 
 
-* Test
+* Tests and benchmark
+
+.link http://golang.org/pkg/testing/
+
+Put your tests/benchmark in a file ending in `_test.go`
+
+	import testing
+
+	func TestXxx(t *testing.T){
+		...
+	}
+	
+	func BenchmarkXxx(b *testing.B){
+		...
+	}
+
+    
+	$cd $GOPATH/src/mypackage
+	$go test
+	$go test -bench=.
+
+.link http://golang.org/cmd/go/#Description_of_testing_flags
 
 
-* Benchmark
+* Profiling
+
+.link http://blog.golang.org/profiling-go-programs
+
+.link http://github.com/davecheney/profile
 
 
 * Readings
