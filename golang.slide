@@ -265,6 +265,8 @@ But we'll see them later
 	&x    address operator
 	*p	  pointer indirection
 
+#* Pointers
+
 No pointer arithmetics 
 
 
@@ -306,7 +308,7 @@ Remember `fmt.Println(...)` in hello world?
 
 
 
-* Varibles and Constants
+* Variables and Constants
 	
 	var (
 		B       string = "hello"
@@ -329,7 +331,7 @@ Together with the iota constant generator it permits light-weight declaration of
 
 
 
-* More varibles
+* More variables
 
 Unused variables (and imports) are an error in Go
 
@@ -803,10 +805,54 @@ Keys can be integers, floats, complex, strings, pointers, interfaces, structs, a
 
 .play goroutine.go
 
-Goroutines live in the same address space
 
-Think of them as avery lightweight threads
 #We can use the sync package, but we have something better...
+
+* Concurrency
+
+Goroutines provide concurrency
+
+- `go` statement allows us to run functions independently in different goroutines 
+
+- Goroutines live in the same address space 
+
+- Think of them as a very lightweight threads
+
+Now we need to communicate
+
+- We need return values form the goroutines 
+
+- We need to feed fresh data to the goroutines to be elaborated
+
+
+
+
+
+
+* Communication
+
+Same address space you say?
+
+Synchronize access to shared memory
+
+- Fence some sheared memory with mutex, locks, conditions...
+
+- Communicate by reading/writing this shared memory
+
+We can do better, we have channels!!
+
+
+
+* Channels
+
+Channels can _connect_ goroutines and allow them to communicate
+
+The go runtime will take care of the synchronization details
+
+We just care about sending and receiving data to the right destination
+
+
+_Don't_communicate_by_sharing_memory;_share_memory_by_communicating._
 
 
 
@@ -815,15 +861,16 @@ Think of them as avery lightweight threads
 	ch := make(chan int)	 // unbuffered channel
 	ch := make(chan int, 10) // buffered channel
 
+Unbuffered channels combine communication with synchronization
+
+Buffered channel are more like synchronized and type safe FIFO queues
+
 Communication primitives
 
 	ch <- v                  // Send v to channel ch
 	v := <-ch                // Receive from ch, and assign value to v
 
-
-Unbuffered channels combine communication with synchronization
-
-Buffered channel are more like synchronized and type safe FIFO queues
+Both operation are blocking if the channel is not ready to communicate
 
 Same as Unix pipes
 
@@ -832,6 +879,33 @@ Same as Unix pipes
 
 
 
+
+* Communication 
+
+
+.code concur.go /STARTPING/,/STOPPONG/
+
+
+
+
+* Communication 
+
+.play concur.go /STARTMAIN/,/STOPMAIN/
+
+The computation happens in the goroutines
+
+The value is passed back and forth
+
+The communication is the synchronization
+
+
+
+* Sharing is caring
+
+Memory is not fenced by locks and condition
+
+Memory is shared bu _passing_ it along
+
 * More channels
 
 Channels can be closed to signal the receivers the termination of the data flow
@@ -839,7 +913,7 @@ Channels can be closed to signal the receivers the termination of the data flow
 	ch := make(chan int)
 	close(ch)
 
-To check if a channel is close use the multi-valued assignment form of the receive operator
+To check if a channel is closed use the multi-valued assignment form of the receive operator
 
 	x, ok := <-ch
 	if !ok{
@@ -850,27 +924,16 @@ Receiving from a closed channel always succeeds, immediately returning the eleme
 
 
 
-* More channels
+* Range in channels
 
-_Don't_communicate_by_sharing_memory;_share_memory_by_communicating._
 
-	ch := make(chan *Message)
-	...
-	//producer
-	go func(){
-		for{
-			ch <- &Message{...}
-		}
-	}()
-	...
-	//consumer
-	go func(){
-		for m := range ch {
-			msg.Consume(m)
-		}
-	}()
+.play rangechan.go
 
-The communication is the way these goroutines share memory
+Range will iterate on all the values sent through the channel until it is closed
+
+Closing a non empty channel will prevent us from receiving the already sent values
+
+What if we do not close the channel?
 
 * Select
 
@@ -888,7 +951,7 @@ Select is similar to switch but each case is a communication statement
 		fmt.Println("no communication")
 	}
 
-If `default` case is not present `select` blocks until a cahannel is ready to communicate
+If `default` case is not present `select` blocks until a channel is ready to communicate
 
 `select{}` blocks forever
 
@@ -897,7 +960,35 @@ If `default` case is not present `select` blocks until a cahannel is ready to co
 
 .play select.go /START/,/STOP/
 
-* Tricks
+
+* Timeouts
+
+	timeout := time.After(100 * time.Millisecond)
+	select {
+	case result := <-ch:
+		DoStuff(result)
+	case <-timeout:
+		fmt.Println("timed out")
+		return
+	}
+
+
+* Fan in 
+		
+		input1 := make(chan string)
+		input2 := make(chan string)
+		out := make(chan string)
+		for {
+			select {
+			case s := <-input1:  out <- s
+			case s := <-input2:  out <- s
+			}
+		}
+
+* Fan out
+
+
+
 
 * Avoid (some) garbage
 
@@ -965,6 +1056,8 @@ But receiving from a closed channel always succeeds...
 	id1 := <-ids
 	id2 := <-ids
 
+
+*Practical stuff
 
 
 * Installation
