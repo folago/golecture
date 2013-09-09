@@ -63,18 +63,6 @@ Languages used at Google were not satisfactory
 
 * Go
 
-Go is compiled, concurrent, garbage-collected, statically typed
-
-Opensourced in 2009
-
-Now version 1.1.2
-
-As of 1/11/2013 feature freeze for Go 1.2
-
-
-
-* Go
-
 Modern and pragmatical language
 
 Not a research language to explore new horizons
@@ -89,6 +77,16 @@ Good tools
 
 Nothing exactly new but a collection of good features
 
+
+* Go
+
+Opensourced in 2009
+
+Current version 1.1.2
+
+As of 1/11/2013 feature freeze for Go 1.2
+
+.image gopher.jpeg
 
 * Go
 
@@ -117,6 +115,7 @@ No header files
 
 .image govsc.png 480 768
 
+.link http://benchmarksgame.alioth.debian.org/u64q/go.php Benchmarks from here
 
 
 * Go benchmarks (!)
@@ -135,7 +134,6 @@ No header files
 
 .image govsruby.png 480 768
 
-.link http://benchmarksgame.alioth.debian.org/ Benchmarks from here
 
 
 * Hello World
@@ -263,7 +261,7 @@ But we'll see them later
 	>=    greater or equal
 
 	&x    address operator
-	*p	  pointer indirection
+	*p    pointer indirection
 
 #* Pointers
 
@@ -329,17 +327,36 @@ Variables, and constants, can be initialized when declared
 Together with the iota constant generator it permits light-weight declaration of sequential values
 
 
+#
+#
+#* Enums? Almost
+#	type ByteSize float64
+#
+#	const (
+#		_           = iota // ignore first value by assigning to blank identifier
+#		KB ByteSize = 1 << (10 * iota)
+#		MB
+#		GB
+#		TB
+#		PB
+#		EB
+#		ZB
+#		YB
+#	)
+#The blank identifier ( _ ) may be used in a declaration but the declaration does not introduce a new binding
+#
+
 
 
 * More variables
 
-Unused variables (and imports) are an error in Go
+Unused variables (and imports) are errors in Go
 
 The blank identifier ( _ ) may be used in a declaration but the declaration does not introduce a new binding
 
 Or in an assignment but the value is discarded
 
-	_, _, _ = x, y, x
+	_, _, _ = x, y, z
 
 	const (
 		_   = iota //0
@@ -347,23 +364,17 @@ Or in an assignment but the value is discarded
 		B          //2
 	)
 
+* More variables
+
 Inside functions variable can be defined with `:=`
 
 	x := SomeFunc()
 	y := x++
 	x, y, z := 0, 1, 2
 
-The compiler infers the type
+The compiler infers the type 
 
-
-
-
-#* Enums? Almost
-#
-#.code mypackage/mypackage.go  /STARTIOTA/,/STOPIOTA/
-#
-#The blank identifier ( _ ) may be used in a declaration but the declaration does not introduce a new binding
-
+.image gopher2.jpeg
 
 * Functions
 
@@ -372,6 +383,7 @@ The compiler infers the type
 - User defined function types 
 - Function literals 
 - Closures
+- Multiple return values
 
 
 
@@ -386,16 +398,17 @@ A return statement without arguments returns the current values of the results
 
 * More  functions 
 
-.play firstfunc.go
-
 First-class functions,  higher-order functions and user-defined function types
+
+.play firstfunc.go
 
 
 * More functions
 
+Function literals are closures
+
 .play closures.go
 
-Function literals are closures
 
 
 * Deferred functions
@@ -431,6 +444,8 @@ The canonical examples are unlocking a mutex or closing a file
 - Interfaces
 - Composition and embedding
 
+.image gopher3.jpeg
+
 
 * Type definition
 
@@ -444,10 +459,12 @@ The canonical examples are unlocking a mutex or closing a file
 		Write()
 	}
 
+	type Callback func(*int, string)
+
 
 Go is strong typed so `MyInt` is not an `int`
 
-Types can be onverted  with this syntax `int(MyInt)`
+Types can be converted  with this syntax `int(MyInt)`
 
 Any type can have methods (even functions)
 
@@ -469,33 +486,36 @@ Built in function `new()` returns a pointer to a newly allocated and zeroed memo
 
 	v := new(Vertex) // has type *Vertex
 
-Built in function `make()` used to allocate more complex built in types: channels, maps and slices
+Built in function `make()` used to allocate built in types: channels, maps and slices
 
 	m := make(map[string]int)
 
-* Methods
+* Method
 
-	type Vertex struct {
-		X, Y int
-	}
-	
 	func (v1 Vertex)Add(v2 Vertex)Vertex{
 		return Vertex{v1.X + v2.X, v1.Y + v2.Y}
 	}
+	
+	func (v *Vertex)Sum(a Vertex) {
+		v.X += a.X
+		v.Y += a.Y
+	}
 
-Method invocation is with the dot notation
+Method receivers and method sets
+Vertex
+- Add(Vertex)
 
-	var (
-		m = Vertex{1, 2}
-		n = Vertex{3, 4}
-		)
-	...
-	m.Add(n)
-    
+*Vertex
+- Add(Vertex)
+- Sum(Vertex)
+
 
 * Method receivers
 
-.play receiver.go 
+.play receiver.go /START/,/STOP/
+
+_If_x_is_addressable_and_&x's_method_set_contains_m,_x.m()_is_shorthand_for_(&x).m()_
+
 
 
 * Interfaces
@@ -539,7 +559,6 @@ The compiler tells you if it is a _duck_
 
 
 
-
 * Interfaces
 
 Any type satisfies the empty method set
@@ -549,7 +568,13 @@ Any type satisfies the empty method set
 .play iempty.go 
 
 
+* Method sets
 
+N.B.
+
+.play interfset.go /START/,/STOP/
+
+_The_concrete_value_stored_in_an_interface_is_not_addressable_
 
 * Interfaces composition
 
@@ -684,12 +709,12 @@ What is the actual type of an interface?
 	}
 
 
-* Array, slice and maps 
+* Arrays, slices and maps 
 #and channels
 
 
 
-* Array
+* Arrays
 
 
 .play array.go
@@ -697,7 +722,7 @@ What is the actual type of an interface?
 
 
 
-* Array 
+* Arrays
 
 Value type not reference type
 
@@ -707,7 +732,7 @@ The size of an array is part of its type
 
 
 
-* Slice
+* Slices
 
 .play slice.go
 
@@ -742,7 +767,7 @@ Copy a slice
 
 * Slice tricks
 
-AppendVector
+Append
 
 	a = append(a, b...)
 
@@ -984,10 +1009,6 @@ If `default` case is not present `select` blocks until a channel is ready to com
 			case s := <-input2:  out <- s
 			}
 		}
-
-* Fan out
-
-
 
 
 * Avoid (some) garbage
