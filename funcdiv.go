@@ -4,7 +4,7 @@ import "errors"
 import "fmt"
 
 // START OMIT
-//QuotRem calculates the quotient and reminder of the integer division.
+//Div calculates the quotient and reminder of the integer division.
 //It returns an error in case of division by zero.
 func Div(a, b int) (quot, rem int, err error) { // HL
 	if b != 0 {

@@ -1,7 +1,7 @@
 package main
 
 import "fmt"
-
+// START OMIT
 type Vertex struct {
 	X, Y int
 }
@@ -19,6 +19,7 @@ func main() {
 	a := Vertex{1, 3}
 	b := Vertex{2, 6}
 	fmt.Println(a)
-	a.Sum(b)
+	a.Sum(b) // HL
 	fmt.Println(a)
 }
+// STOP OMIT
