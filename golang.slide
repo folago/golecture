@@ -874,7 +874,7 @@ Channels can _connect_ goroutines and allow them to communicate
 
 The go runtime will take care of the synchronization details
 
-We just care about sending and receiving data to the right destination
+We just care about sending and receiving data
 
 
 _Don't_communicate_by_sharing_memory;_share_memory_by_communicating._
@@ -931,6 +931,10 @@ Memory is not fenced by locks and condition
 
 Memory is shared bu _passing_ it along
 
+After you give it away is not your memory anymore
+
+.image gopher2.jpeg
+
 * More channels
 
 Channels can be closed to signal the receivers the termination of the data flow
@@ -956,9 +960,13 @@ Receiving from a closed channel always succeeds, immediately returning the eleme
 
 Range will iterate on all the values sent through the channel until it is closed
 
-Closing a non empty channel will prevent us from receiving the already sent values
+Closing a non empty channel will not prevent us from receiving the already sent values
 
 What if we do not close the channel?
+
+
+
+
 
 * Select
 
@@ -1005,11 +1013,14 @@ If `default` case is not present `select` blocks until a channel is ready to com
 		out := make(chan string)
 		for {
 			select {
-			case s := <-input1:  out <- s
-			case s := <-input2:  out <- s
+			case s := <-input1:  
+				out <- s
+			case s := <-input2:  
+				out <- s
 			}
 		}
 
+.image fanin.jpeg
 
 * Avoid (some) garbage
 
@@ -1078,7 +1089,7 @@ But receiving from a closed channel always succeeds...
 	id2 := <-ids
 
 
-*Practical stuff
+* Practical stuff
 
 
 * Installation
